@@ -7,7 +7,7 @@ using Dsw2025Ej8.Domain;
 
 namespace Dsw2025Ej8.Domain
 {
-    class Tests
+    public class Tests
     {
         public void Ejecutar()
         {

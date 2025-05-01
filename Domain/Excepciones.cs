@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Dsw2025Ej8.Domain
 {
-    class Excepciones
+    public class Excepciones
     {
         public class MontoNoValido : Exception
         {
