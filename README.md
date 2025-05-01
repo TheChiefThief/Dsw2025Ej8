@@ -1,6 +1,10 @@
 # Ejercicio N° 8
 ## Desarrollo de Software
 ### Herencia y propiedades
+# Integrantes:
+	# Luciano Agustin Malica Matiussi - 58099 - lucianomalicaagustin@gmail.com - 3K1
+	# Francisco Dini Domijan - 56897 - frandini2004@gmail.com - 3K1
+	# Julian Ruiz Lopez - 58089 - julianruizlopez5a@gmail.com - 3K1
 
 1. Realizar una bifurcación (fork) del [repositorio](https://github.com/ing-software-frt-utn/dsw2025ej8)
 2. Crear una rama de larga duración development

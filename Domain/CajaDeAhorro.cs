@@ -8,8 +8,10 @@ namespace Dsw2025Ej8.Domain
 {
     class CajaDeAhorro : CuentaBancaria
     {
-        public CajaDeAhorro(string numero, decimal saldo, TipoCuenta tipo, string[] titulares) : base(numero, saldo, tipo, titulares)
+        // CajaDeAhorro -> tipo = 1
+        public CajaDeAhorro(string numero, decimal saldo, string[] titulares) : base(numero, saldo, 1, titulares)
         {
+
         }
     }
 }

@@ -1,27 +1,27 @@
 ﻿namespace Dsw2025Ej8.Domain;
 
-public class CuentaBancaria
+public abstract class CuentaBancaria
 {
-    public TipoCuenta _tipo { get; }
+    public int _tipo { get; }
     public string _numero { get; }
-    public decimal _saldo { get; private set; }
-    public Estado _estado { get; init; }
+    public decimal _saldo { get; protected set; }
+    public Estado _estado { get; private set; }
     public decimal _tasaDeInteres
     {
         get => _tasaDeInteres;
-        private set
+        init
         {
             if (value < 0)
             {
-                throw new ArgumentException("La tasa de interés no puede ser negativa.");
-            } 
+                throw new ArgumentException("La tasa de interes no puede ser negativa.");
+            }
             _tasaDeInteres = value;
         }  
     }
     public decimal _limiteDeDescubierto 
     {
         get => _limiteDeDescubierto;
-        private set
+        init
         {
             if (value < 0)
             {
@@ -34,8 +34,8 @@ public class CuentaBancaria
     public decimal _comision { get; private set; }
     public string[] _titulares { get; }
 
-
-    public CuentaBancaria(string numero, decimal saldo, TipoCuenta tipo, string[] titulares)
+    
+    public CuentaBancaria(string numero, decimal saldo, int tipo, string[] titulares)
     {
         _numero = numero;
         _saldo = saldo;
@@ -49,18 +49,18 @@ public class CuentaBancaria
     {
         if (_estado != Estado.Activa)
         {
-            throw new CuentaNoActiva();
+            throw new Excepciones.CuentaNoActiva();
         }
         if (monto <= 0)
         {
-            throw new MontoNoValido();
+            throw new Excepciones.MontoNoValido();
         }
-        if (_tipo == TipoCuenta.CajaDeAhorro)
-            {
+        if (_tipo == 1) // Caja de Ahorro
+        {
                 _saldo += monto;
             }
-            else if (_tipo == TipoCuenta.CuentaCorriente)
-            {
+            else if (_tipo == 2) // Cuenta Corriente
+        {
                 monto -= monto * _comision;
                 _saldo += monto;
             }
@@ -71,18 +71,18 @@ public class CuentaBancaria
     {
         if (_estado != Estado.Activa)
         {
-            throw new CuentaNoActiva();
+            throw new Excepciones.CuentaNoActiva();
         }
         if (monto <= 0)
         {
-            throw new MontoNoValido();
+            throw new Excepciones.MontoNoValido();
         }
-            if (_tipo == TipoCuenta.CajaDeAhorro)
-            {
+            if (_tipo == 1) // Caja de Ahorro
+        {
                 _saldo -= monto;
             }
-            else if (_tipo == TipoCuenta.CuentaCorriente)
-            {
+            else if (_tipo == 2) // Caja corriente
+        {
                 if (_saldo - monto >= -_limiteDeDescubierto)
                 {
                     _saldo -= monto;
@@ -90,7 +90,7 @@ public class CuentaBancaria
                 if (_saldo < 0)
                 {
                     _estado = Estado.Suspendida;
-                    throw new SaldoInsuficiente();
+                    throw new Excepciones.SaldoInsuficiente();
                 }
             }
         
@@ -98,21 +98,10 @@ public class CuentaBancaria
 
     public void AplicarInteres()
     {
-        if (_tipo == TipoCuenta.CajaDeAhorro)
+        if (_tipo == 1) // Caja de Ahorro
         {
             _saldo += _saldo * _tasaDeInteres;
         }
     }
-    public class MontoNoValido : Exception
-    {
-        public MontoNoValido() : base("El monto ingresado no es válido para la operación solicitada.") { }
-    }
-    public class CuentaNoActiva : Exception
-    {
-        public CuentaNoActiva() : base("La cuenta no está activa.") { }
-    }
-    public class SaldoInsuficiente : Exception
-    {
-        public SaldoInsuficiente() : base("El saldo es insuficiente.") { }
-    }
+    
 }
