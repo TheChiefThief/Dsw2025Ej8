@@ -5,7 +5,7 @@ public class CuentaBancaria
     public TipoCuenta _tipo { get; }
     public string _numero { get; }
     public decimal _saldo { get; private set; }
-    public Estado _estado { get; private set; }
+    public Estado _estado { get; init; }
     public decimal _tasaDeInteres
     {
         get => _tasaDeInteres;
@@ -25,7 +25,7 @@ public class CuentaBancaria
         {
             if (value < 0)
             {
-                throw new ArgumentException("El limite no puede ser negativa.");
+                throw new ArgumentException("El limite no puede ser negativo.");
             }
             _limiteDeDescubierto = value;
 
@@ -47,6 +47,10 @@ public class CuentaBancaria
 
     public void Depositar(decimal monto)
     {
+        if (_estado != Estado.Activa)
+        {
+            throw new CuentaNoActiva();
+        }
         if (monto <= 0)
         {
             throw new MontoNoValido();
@@ -65,6 +69,10 @@ public class CuentaBancaria
 
     public void Retirar(decimal monto)
     {
+        if (_estado != Estado.Activa)
+        {
+            throw new CuentaNoActiva();
+        }
         if (monto <= 0)
         {
             throw new MontoNoValido();
@@ -82,6 +90,7 @@ public class CuentaBancaria
                 if (_saldo < 0)
                 {
                     _estado = Estado.Suspendida;
+                    throw new SaldoInsuficiente();
                 }
             }
         
@@ -97,5 +106,13 @@ public class CuentaBancaria
     public class MontoNoValido : Exception
     {
         public MontoNoValido() : base("El monto ingresado no es válido para la operación solicitada.") { }
+    }
+    public class CuentaNoActiva : Exception
+    {
+        public CuentaNoActiva() : base("La cuenta no está activa.") { }
+    }
+    public class SaldoInsuficiente : Exception
+    {
+        public SaldoInsuficiente() : base("El saldo es insuficiente.") { }
     }
 }

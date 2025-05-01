@@ -10,6 +10,7 @@ namespace Dsw2025Ej8.Domain
     {
         public CuentaCorriente(string numero, decimal saldo, TipoCuenta tipo, string[] titulares) : base(numero, saldo, tipo, titulares)
         {
+
         }
     }
 }
