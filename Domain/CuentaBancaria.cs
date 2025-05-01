@@ -6,8 +6,31 @@ public class CuentaBancaria
     public string _numero { get; }
     public decimal _saldo { get; private set; }
     public Estado _estado { get; private set; }
-    public decimal _tasaDeInteres { get; private set; }
-    public decimal _limiteDeDescubierto { get; private set; }
+    public decimal _tasaDeInteres
+    {
+        get => _tasaDeInteres;
+        private set
+        {
+            if (value < 0)
+            {
+                throw new ArgumentException("La tasa de interés no puede ser negativa.");
+            } 
+            _tasaDeInteres = value;
+        }  
+    }
+    public decimal _limiteDeDescubierto 
+    {
+        get => _limiteDeDescubierto;
+        private set
+        {
+            if (value < 0)
+            {
+                throw new ArgumentException("El limite no puede ser negativa.");
+            }
+            _limiteDeDescubierto = value;
+
+        }
+    }
     public decimal _comision { get; private set; }
     public string[] _titulares { get; }
 
@@ -22,41 +45,46 @@ public class CuentaBancaria
     }
 
 
-
-
-
-
-
     public void Depositar(decimal monto)
     {
+        if (monto <= 0)
+        {
+            throw new MontoNoValido();
+        }
         if (_tipo == TipoCuenta.CajaDeAhorro)
-        {
-           _saldo += monto;
-        }
-        else if (_tipo == TipoCuenta.CuentaCorriente)
-        {
-            monto -= monto * _comision;
-            _saldo += monto;
-        }
+            {
+                _saldo += monto;
+            }
+            else if (_tipo == TipoCuenta.CuentaCorriente)
+            {
+                monto -= monto * _comision;
+                _saldo += monto;
+            }
+        
     }
 
     public void Retirar(decimal monto)
     {
-        if (_tipo == TipoCuenta.CajaDeAhorro)
+        if (monto <= 0)
         {
-            _saldo -= monto;
+            throw new MontoNoValido();
         }
-        else if (_tipo == TipoCuenta.CuentaCorriente)
-        {
-            if (_saldo - monto >= -_limiteDeDescubierto)
+            if (_tipo == TipoCuenta.CajaDeAhorro)
             {
                 _saldo -= monto;
             }
-            if (_saldo < 0)
+            else if (_tipo == TipoCuenta.CuentaCorriente)
             {
-                _estado = Estado.Suspendida;
+                if (_saldo - monto >= -_limiteDeDescubierto)
+                {
+                    _saldo -= monto;
+                }
+                if (_saldo < 0)
+                {
+                    _estado = Estado.Suspendida;
+                }
             }
-        }
+        
     }
 
     public void AplicarInteres()
@@ -65,5 +93,9 @@ public class CuentaBancaria
         {
             _saldo += _saldo * _tasaDeInteres;
         }
+    }
+    public class MontoNoValido : Exception
+    {
+        public MontoNoValido() : base("El monto ingresado no es válido para la operación solicitada.") { }
     }
 }
