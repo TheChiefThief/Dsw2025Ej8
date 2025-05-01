@@ -1,36 +1,13 @@
 ﻿namespace Dsw2025Ej8.Domain;
 
-public abstract class CuentaBancaria
+public abstract class CuentaBancaria // Colocamos abstract para que no se pueda instanciar directamente
 {
     public int _tipo { get; }
     public string _numero { get; }
     public decimal _saldo { get; protected set; }
     public Estado _estado { get; private set; }
-    public decimal _tasaDeInteres
-    {
-        get => _tasaDeInteres;
-        init
-        {
-            if (value < 0)
-            {
-                throw new ArgumentException("La tasa de interes no puede ser negativa.");
-            }
-            _tasaDeInteres = value;
-        }  
-    }
-    public decimal _limiteDeDescubierto 
-    {
-        get => _limiteDeDescubierto;
-        init
-        {
-            if (value < 0)
-            {
-                throw new ArgumentException("El limite no puede ser negativo.");
-            }
-            _limiteDeDescubierto = value;
-
-        }
-    }
+    public decimal _tasaDeInteres { get; init; }
+    public decimal _limiteDeDescubierto { get; init; }
     public decimal _comision { get; private set; }
     public string[] _titulares { get; }
 
@@ -58,12 +35,12 @@ public abstract class CuentaBancaria
         if (_tipo == 1) // Caja de Ahorro
         {
                 _saldo += monto;
-            }
-            else if (_tipo == 2) // Cuenta Corriente
+        }
+        else if (_tipo == 2) // Cuenta Corriente
         {
                 monto -= monto * _comision;
                 _saldo += monto;
-            }
+        }
         
     }
 
@@ -82,7 +59,12 @@ public abstract class CuentaBancaria
                 _saldo -= monto;
             }
             else if (_tipo == 2) // Caja corriente
-        {
+            {
+                if(_limiteDeDescubierto < 0) // el limite de descubierto no puede ser menor a cero
+                {
+                    throw new Exception("El límite de descubierto no puede ser menor a cero.");
+                }    
+
                 if (_saldo - monto >= -_limiteDeDescubierto)
                 {
                     _saldo -= monto;
@@ -98,10 +80,20 @@ public abstract class CuentaBancaria
 
     public void AplicarInteres()
     {
+        if (_tasaDeInteres <= 0) // la tasa de interés no puede ser menor o igual a cero
+        {
+            throw new Exception("La tasa de interés no puede ser menor o igual a cero.");
+        }
         if (_tipo == 1) // Caja de Ahorro
         {
             _saldo += _saldo * _tasaDeInteres;
         }
     }
-    
+
+    // Solamente para testear
+    public void CambiarEstado(Estado nuevoEstado)
+    {
+        _estado = nuevoEstado;
+    }
+
 }
