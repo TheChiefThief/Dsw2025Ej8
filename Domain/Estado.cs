@@ -5,4 +5,5 @@ public enum Estado
     Activa = 1,
     Inactiva,
     Suspendida
+
 }

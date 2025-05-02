@@ -1,17 +1,18 @@
 ﻿namespace Dsw2025Ej8.Domain;
 
-public class CuentaBancaria
+public abstract class CuentaBancaria
 {
-    private TipoCuenta _tipo;
-    private string _numero;
-    private decimal _saldo;
-    private Estado _estado;
-    private decimal _tasaDeInteres;
-    private decimal _limiteDeDescubierto;
-    private decimal _comision;
-    private string[] _titulares;
+    public int _tipo { get; }
+    public string _numero { get; }
+    public decimal _saldo { get; protected set; }
+    public Estado _estado { get; private set; }
+    public decimal _tasaDeInteres { get; init; }
+    public decimal _limiteDeDescubierto { get; init; }
+    public decimal _comision { get; private set; }
+    public string[] _titulares { get; }
 
-    public CuentaBancaria(string numero, decimal saldo, TipoCuenta tipo, string[] titulares)
+    
+    public CuentaBancaria(string numero, decimal saldo, int tipo, string[] titulares)
     {
         _numero = numero;
         _saldo = saldo;
@@ -19,104 +20,79 @@ public class CuentaBancaria
         _estado = Estado.Activa;
         _titulares = titulares;
     }
-    #region Getters/Setters
-    public string GetNumero()
-    {
-        return _numero;
-    }
 
-    public decimal GetSaldo()
-    {
-        return _saldo;
-    }
-    public TipoCuenta GetTipo()
-    {
-        return _tipo;
-    }
-
-    public Estado GetEstado()
-    {
-        return _estado;
-    }
-
-    public void SetEstado(Estado estado)
-    {
-        _estado = estado;
-    }
-
-    public decimal GetTasaDeInteres()
-    {
-        return _tasaDeInteres;
-    }
-
-    public void SetTasaDeInteres(decimal tasaDeInteres)
-    {
-        _tasaDeInteres = tasaDeInteres;
-    }
-
-    public decimal GetLimiteDeDescubierto()
-    {
-        return _limiteDeDescubierto;
-    }
-
-    public void SetLimiteDeDescubierto(decimal limiteDeDescubierto)
-    {
-        _limiteDeDescubierto = limiteDeDescubierto;
-    }
-
-    public decimal GetComision()
-    {
-        return _comision;
-    }
-
-    public void SetComision(decimal comision)
-    {
-        _comision = comision;
-    }
-
-    public string[] GetTitulares()
-    {
-        return _titulares;
-    }
-    #endregion
 
     public void Depositar(decimal monto)
     {
-        if (_tipo == TipoCuenta.CajaDeAhorro)
+        if (_estado != Estado.Activa)
         {
-            _saldo += monto;
+            throw new Excepciones.CuentaNoActiva();
         }
-        else if (_tipo == TipoCuenta.CuentaCorriente)
+        if (monto <= 0)
         {
-            monto -= monto * _comision;
-            _saldo += monto;
+            throw new Excepciones.MontoNoValido();
         }
+        if (_tipo == 1)
+        {
+                _saldo += monto;
+        }
+        else if (_tipo == 2)
+        {
+                monto -= monto * _comision;
+                _saldo += monto;
+        }
+        
     }
 
     public void Retirar(decimal monto)
     {
-        if (_tipo == TipoCuenta.CajaDeAhorro)
+        if (_estado != Estado.Activa)
         {
-            _saldo -= monto;
+            throw new Excepciones.CuentaNoActiva();
         }
-        else if (_tipo == TipoCuenta.CuentaCorriente)
+        if (monto <= 0)
         {
-            if (_saldo - monto >= -_limiteDeDescubierto)
-            {
+            throw new Excepciones.MontoNoValido();
+        }
+            if (_tipo == 1)
+        {
                 _saldo -= monto;
             }
-            if (_saldo < 0)
+            else if (_tipo == 2)
             {
-                _estado = Estado.Suspendida;
+                if(_limiteDeDescubierto < 0)
+                {
+                    throw new Exception("El límite de descubierto no puede ser menor a cero.");
+                }    
+
+                if (_saldo - monto >= -_limiteDeDescubierto)
+                {
+                    _saldo -= monto;
+                }
+                if (_saldo < 0)
+                {
+                    _estado = Estado.Suspendida;
+                    throw new Excepciones.SaldoInsuficiente();
+                }
             }
-        }
+        
     }
 
     public void AplicarInteres()
     {
-        if (_tipo == TipoCuenta.CajaDeAhorro)
+        if (_tasaDeInteres <= 0)
+        {
+            throw new Exception("La tasa de interés no puede ser menor o igual a cero.");
+        }
+        if (_tipo == 1)
         {
             _saldo += _saldo * _tasaDeInteres;
         }
     }
+
+    public void CambiarEstado(Estado nuevoEstado)
+    {
+        _estado = nuevoEstado;
+    }
+
 }
