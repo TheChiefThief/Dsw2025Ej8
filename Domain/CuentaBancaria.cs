@@ -1,6 +1,6 @@
 ﻿namespace Dsw2025Ej8.Domain;
 
-public abstract class CuentaBancaria // Colocamos abstract para que no se pueda instanciar directamente
+public abstract class CuentaBancaria
 {
     public int _tipo { get; }
     public string _numero { get; }
@@ -32,11 +32,11 @@ public abstract class CuentaBancaria // Colocamos abstract para que no se pueda 
         {
             throw new Excepciones.MontoNoValido();
         }
-        if (_tipo == 1) // Caja de Ahorro
+        if (_tipo == 1)
         {
                 _saldo += monto;
         }
-        else if (_tipo == 2) // Cuenta Corriente
+        else if (_tipo == 2)
         {
                 monto -= monto * _comision;
                 _saldo += monto;
@@ -54,13 +54,13 @@ public abstract class CuentaBancaria // Colocamos abstract para que no se pueda 
         {
             throw new Excepciones.MontoNoValido();
         }
-            if (_tipo == 1) // Caja de Ahorro
+            if (_tipo == 1)
         {
                 _saldo -= monto;
             }
-            else if (_tipo == 2) // Caja corriente
+            else if (_tipo == 2)
             {
-                if(_limiteDeDescubierto < 0) // el limite de descubierto no puede ser menor a cero
+                if(_limiteDeDescubierto < 0)
                 {
                     throw new Exception("El límite de descubierto no puede ser menor a cero.");
                 }    
@@ -80,17 +80,16 @@ public abstract class CuentaBancaria // Colocamos abstract para que no se pueda 
 
     public void AplicarInteres()
     {
-        if (_tasaDeInteres <= 0) // la tasa de interés no puede ser menor o igual a cero
+        if (_tasaDeInteres <= 0)
         {
             throw new Exception("La tasa de interés no puede ser menor o igual a cero.");
         }
-        if (_tipo == 1) // Caja de Ahorro
+        if (_tipo == 1)
         {
             _saldo += _saldo * _tasaDeInteres;
         }
     }
 
-    // Solamente para testear
     public void CambiarEstado(Estado nuevoEstado)
     {
         _estado = nuevoEstado;
